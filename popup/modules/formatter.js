@@ -4,8 +4,7 @@
  */
 
 export const generateAiPrompt = (data) => {
-  let context = "### GLOBAL DESIGN SYSTEM CONTEXT\n";
-  context += "Use these tokens for high-fidelity reconstruction. If you see a screenshot, match the layout using these specific variables and values.\n\n";
+  let context = "";
 
   context += "#### 🎨 COLOR PALETTE\n";
   data.palette.forEach(p => {
