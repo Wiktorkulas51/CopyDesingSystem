@@ -76,3 +76,209 @@
   flex-direction: column;
   gap: 0.75rem;
 }
+#app {
+  display: flex;
+  flex-direction: column;
+  width: min(100vw, 25rem);
+  min-height: 40rem;
+  max-height: 48rem;
+  padding: 0.75rem;
+  background:
+    radial-gradient(circle at top left, rgba(0, 255, 209, 0.08), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(0, 102, 255, 0.08), transparent 32%),
+    linear-gradient(180deg, #0b0b0f 0%, #09090d 100%);
+}
+
+.header-shell {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 0.9rem 0.8rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  background: var(--surface-strong);
+  backdrop-filter: var(--glass-blur-heavy);
+  box-shadow: var(--shadow-glow);
+}
+
+.brand-block {
+  min-width: 0;
+}
+
+.header-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  min-width: 9rem;
+}
+
+.header-copy-btn,
+.header-ghost-btn {
+  min-height: 2.625rem;
+  padding-inline: 0.85rem;
+}
+
+.header-ghost-btn {
+  border-color: var(--border-strong);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.header-copy-btn {
+  box-shadow: 0 10px 24px rgba(0, 255, 209, 0.12);
+}
+
+.tab-nav {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 0.65rem 0.1rem 0.7rem;
+}
+
+.tab-btn {
+  min-height: 2.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.tab-btn.is-active {
+  color: var(--text-primary);
+  background: var(--tab-active);
+  border-color: rgba(0, 255, 209, 0.35);
+  box-shadow: 0 0 0 1px rgba(0, 255, 209, 0.18) inset;
+}
+
+.main {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.1rem;
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.is-active {
+  display: block;
+  animation: panelIn 220ms ease-out;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+}
+
+.summary-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(12px);
+  padding: 0.8rem;
+}
+
+.summary-kicker {
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.summary-value {
+  margin-top: 0.35rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.summary-note {
+  margin-top: 0.2rem;
+  font-size: 0.68rem;
+  color: var(--accent-color);
+}
+
+.content-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.section-shell {
+  padding: 0.2rem 0 0.1rem;
+}
+
+.section-shell + .section-shell {
+  margin-top: 0.15rem;
+}
+
+.section-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.7rem;
+}
+
+.section-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+}
+
+.section-title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.section-count {
+  font-size: 0.62rem;
+  color: var(--accent-color);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.empty-state {
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  border: 1px dashed var(--border-color);
+  color: var(--text-secondary);
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+@media (hover: hover) {
+  .tab-btn:hover {
+    color: var(--text-primary);
+    border-color: rgba(0, 255, 209, 0.24);
+    transform: translateY(-1px);
+  }
+
+  .header-ghost-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

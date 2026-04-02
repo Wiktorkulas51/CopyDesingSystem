@@ -12,6 +12,7 @@ A Chrome Extension for extracting high-fidelity design systems from websites, st
 ## Current Structure
 - `manifest.json`: Extension entry point.
 - `popup/`: UI and Popup-specific logic.
+- `popup/index.html`: Fixed-header popup shell with dashboard tabs.
 - `popup/style/`: Modular popup CSS split into tokens, base, layout, components, cards, and previews.
 - `popup/modules/utils/`: Shared pure helpers for color and DOM analysis.
 - `popup/modules/components/`: Atomic token-card renderers and shared copy interactions.
