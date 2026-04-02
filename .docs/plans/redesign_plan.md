@@ -21,11 +21,11 @@ Transition from a simple vertical list to a structured dashboard with:
 ## Task List
 
 ### Phase 1: Foundation & Header
-- [ ] **T1.1**: Update `popup/index.html` structure:
+- [x] **T1.1**: Update `popup/index.html` structure:
     - Move `copy-context-btn` to high-priority header area.
     - Introduce navigation tabs (Dashboard, Tokens, Studio).
-- [ ] **T1.2**: Update `popup/style/tokens.css` with new design tokens for glassmorphism and neon accents.
-- [ ] **T1.3**: Update `popup/style/layout.css` for a "Fixed UI, Scrollable Content" model.
+- [x] **T1.2**: Update `popup/style/tokens.css` with new design tokens for glassmorphism and neon accents.
+- [x] **T1.3**: Update `popup/style/layout.css` for a "Fixed UI, Scrollable Content" model.
 
 ### Phase 2: Navigation & Compact Rendering
 - [ ] **T2.1**: Implement Tab switching logic in `popup/popup.js`.

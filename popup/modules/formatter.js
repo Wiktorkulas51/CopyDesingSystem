@@ -63,6 +63,24 @@ export const generateAiPrompt = (data) => {
     context += `- ${c.value} [${c.category}]: Used ${c.count} times${vars}\n  - Usage: ${c.usageContext}\n`;
   });
 
+  context += "\n#### 🖼 MEDIA ASSETS\n";
+  const mediaAssets = (data.media || []).slice(0, 20);
+  mediaAssets.forEach((asset, index) => {
+    const sourceLine = asset.source
+      ? `Source URL: ${asset.source}`
+      : asset.previewUrl
+        ? `Preview URL: ${asset.previewUrl}`
+        : 'Source URL: inline asset';
+    const locationLine = asset.contextPath || asset.context
+      ? `Used in: ${asset.contextPath || asset.context}`
+      : 'Used in: unknown';
+    const sizeLine = asset.width && asset.height ? ` · ${asset.width}x${asset.height}px` : '';
+    context += `- ${asset.kind.toUpperCase()} ${index + 1}: ${asset.fileName}${sizeLine}\n  - ${sourceLine}\n  - ${locationLine}\n`;
+  });
+  if ((data.media || []).length > mediaAssets.length) {
+    context += `- ... and ${(data.media || []).length - mediaAssets.length} more media assets\n`;
+  }
+
   context += "\n--- END OF CONTEXT ---\n";
 
   return context;

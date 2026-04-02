@@ -7,20 +7,15 @@
   <link rel="stylesheet" href="style/tokens.css">
   <link rel="stylesheet" href="style/base.css">
   <link rel="stylesheet" href="style/layout.css">
+  <link rel="stylesheet" href="style/navigation.css">
   <link rel="stylesheet" href="style/components.css">
   <link rel="stylesheet" href="style/cards.css">
+  <link rel="stylesheet" href="style/media.css">
   <link rel="stylesheet" href="style/previews.css">
 </head>
 <body>
   <div id="app">
     <header class="header-shell">
-      <div class="brand-block">
-        <div class="logo">
-          <div class="logo-box"></div>
-          <span>ANTIGRAVITY</span>
-        </div>
-        <p class="subtitle">Design System Capture</p>
-      </div>
       <div class="header-actions">
         <button id="analyze-btn" class="secondary-btn header-ghost-btn" type="button">
           <span>REFRESH</span>
@@ -32,31 +27,31 @@
       </div>
     </header>
 
-    <nav class="tab-nav" aria-label="Design system views">
-      <button class="tab-btn is-active" type="button" data-tab="dashboard" aria-selected="true">Dashboard</button>
-      <button class="tab-btn" type="button" data-tab="tokens" aria-selected="false">Tokens</button>
-      <button class="tab-btn" type="button" data-tab="layout" aria-selected="false">Layout</button>
-      <button class="tab-btn" type="button" data-tab="graphics" aria-selected="false">Graphics</button>
-    </nav>
-
     <main class="main">
-      <section class="tab-panel is-active" data-panel="dashboard">
-        <div id="dashboard-summary" class="summary-grid">
-          <div class="status-message">Waiting for capture...</div>
-        </div>
+      <section class="tab-panel is-active" data-panel="overview">
+        <div id="dashboard-summary"></div>
         <div id="dashboard-grid" class="content-stack"></div>
       </section>
-      <section class="tab-panel" data-panel="tokens">
-        <div id="tokens-grid" class="color-grid"></div>
+      <section class="tab-panel" data-panel="media">
+        <div id="media-view" class="view-shell"></div>
       </section>
-      <section class="tab-panel" data-panel="layout">
-        <div id="layout-grid" class="color-grid"></div>
+      <section class="tab-panel" data-panel="svgs">
+        <div id="svgs-view" class="view-shell"></div>
       </section>
-      <section class="tab-panel" data-panel="graphics">
-        <div id="graphics-grid" class="color-grid"></div>
+      <section class="tab-panel" data-panel="colors">
+        <div id="colors-view" class="view-shell"></div>
+      </section>
+      <section class="tab-panel" data-panel="fonts">
+        <div id="fonts-view" class="view-shell"></div>
+      </section>
+      <section class="tab-panel" data-panel="history">
+        <div id="history-view" class="view-shell"></div>
       </section>
     </main>
+
+    <nav id="bottom-nav" class="bottom-nav" aria-label="Design system views"></nav>
   </div>
+  <script src="vendor/jszip.min.js"></script>
   <script type="module" src="popup.js"></script>
 </body>
 </html>

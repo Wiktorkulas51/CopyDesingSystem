@@ -4,6 +4,7 @@ export const analyzeDesignSystemRuntime = () => {
   const effectProps = ['boxShadow', 'textShadow', 'backdropFilter', 'filter', 'mixBlendMode', 'backgroundImage'];
   const strokeProps = ['stroke', 'strokeWidth', 'webkitTextStrokeWidth', 'webkitTextStrokeColor'];
   const textTags = ['SPAN', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P', 'A', 'LI', 'LABEL'];
+  const mediaData = {};
   const variableBuckets = [
     { key: 'colors', pattern: /color|bg|fg|text|link|brand|accent|primary|border/i },
     { key: 'radii', pattern: /radius|rounded/i },
@@ -21,12 +22,9 @@ export const analyzeDesignSystemRuntime = () => {
     if (value.startsWith('#')) return value.toUpperCase();
     const match = value.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
     if (!match) return null;
-    const red = parseInt(match[1], 10);
-    const green = parseInt(match[2], 10);
-    const blue = parseInt(match[3], 10);
     const alpha = match[4] ? parseFloat(match[4]) : 1;
     if (alpha < 0.1) return null;
-    return `#${[red, green, blue].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`.toUpperCase();
+    return `#${[match[1], match[2], match[3]].map((channel) => parseInt(channel, 10).toString(16).padStart(2, '0')).join('')}`.toUpperCase();
   };
 
   const cleanFontFamily = (value) => value.split(',')[0].replace(/['"]/g, '').trim();
@@ -42,13 +40,11 @@ export const analyzeDesignSystemRuntime = () => {
   const createUsageContext = (entry) => {
     const topTags = Object.entries(entry.context?.tags || {}).sort((left, right) => right[1] - left[1]).slice(0, 2).map(([tag]) => tag);
     const topClasses = getTopContext(entry.context?.classes || {}, 2);
-    const classPart = topClasses.length ? ` (.${topClasses.join(', .')})` : '';
-    return `${topTags.join(', ')}${classPart}`;
+    return `${topTags.join(', ')}${topClasses.length ? ` (.${topClasses.join(', .')})` : ''}`;
   };
 
   const createEmptyVarMap = () => variableBuckets.reduce((map, bucket) => ((map[bucket.key] = {}), map), {});
   const getBucketValue = (bucketKey, rawValue) => (bucketKey === 'colors' ? normalizeColor(rawValue) : bucketKey === 'fonts' ? cleanFontFamily(rawValue) : rawValue);
-
   const registerVariable = (varMap, prop, value) => {
     variableBuckets.forEach(({ key, pattern }) => {
       if (!pattern.test(prop)) return;
@@ -58,7 +54,6 @@ export const analyzeDesignSystemRuntime = () => {
       varMap[key][bucketValue].push(prop);
     });
   };
-
   const buildVariableMap = () => {
     const varMap = createEmptyVarMap();
     const rootStyle = window.getComputedStyle(document.documentElement);
@@ -74,11 +69,7 @@ export const analyzeDesignSystemRuntime = () => {
   const record = (store, key, factory) => ((store[key] ||= factory()).count += 1, store[key]);
   const finalizeEntry = (entry) => ({ ...entry, usageContext: createUsageContext(entry) });
   const toSortedEntries = (store, threshold, sorter, predicate = () => true) =>
-    Object.values(store)
-      .filter((entry) => (entry.count >= threshold || entry.vars.length > 0) && predicate(entry))
-      .map(finalizeEntry)
-      .sort(sorter);
-
+    Object.values(store).filter((entry) => (entry.count >= threshold || entry.vars.length > 0) && predicate(entry)).map(finalizeEntry).sort(sorter);
   const buildTypographyEntries = (stores, varMap) =>
     Object.values(stores.fontData)
       .filter((entry) => entry.count >= thresholds.fonts || entry.vars.length > 0)
@@ -87,7 +78,6 @@ export const analyzeDesignSystemRuntime = () => {
         return finalizeEntry({ ...entry, weights });
       })
       .sort((left, right) => right.count - left.count);
-
   const splitSizes = (sizes) => {
     const headings = sizes.filter((size) => {
       const pixelValue = parseFloat(size.value);
@@ -100,6 +90,85 @@ export const analyzeDesignSystemRuntime = () => {
       return pixelValue < thresholds.headingSize && !isHeadingToken;
     });
     return { headings, body };
+  };
+
+  const makeMediaKey = (kind, source, extra = '') => `${kind}|${source || extra}`;
+  const normalizeUrl = (rawUrl) => {
+    if (!rawUrl) return '';
+    try { return new URL(rawUrl, document.baseURI).href; } catch { return rawUrl; }
+  };
+  const isSvgSource = (source) => /\.svg(\?|$)/i.test(source || '') || /^data:image\/svg\+xml/i.test(source || '');
+  const describeElement = (element) => {
+    if (!element) return '';
+    const idPart = element.id ? `#${element.id}` : '';
+    const classPart = element.className
+      ? `.${String(element.className).split(/\s+/).filter(Boolean).slice(0, 2).join('.')}`
+      : '';
+    return `${element.tagName}${idPart}${classPart}`;
+  };
+  const getContextTrail = (element, maxDepth = 3) => {
+    const trail = [];
+    let current = element;
+    while (current && trail.length < maxDepth) {
+      const label = describeElement(current);
+      if (label) trail.push(label);
+      current = current.parentElement;
+    }
+    return trail.join(' > ');
+  };
+  const getContextLabel = (element) => {
+    const contextEl = element.closest('[id], [class]');
+    if (!contextEl) return '';
+    const idPart = contextEl.id ? `#${contextEl.id}` : '';
+    const classPart = contextEl.className ? `.${String(contextEl.className).split(/\s+/).filter(Boolean).slice(0, 2).join('.')}` : '';
+    return `${contextEl.tagName}${idPart}${classPart}`;
+  };
+  const buildMediaRecord = (element, kind, source, extra = {}) => {
+    const normalizedSource = normalizeUrl(source);
+    const key = makeMediaKey(kind, normalizedSource, extra.inlineMarkup || '');
+    if (!mediaData[key]) {
+      const fileName = extra.fileName || (normalizedSource ? (normalizedSource.split('/').pop() || `${kind}.bin`).split('?')[0] : `${kind}.svg`);
+      mediaData[key] = { id: key, kind, source: normalizedSource, fileName, count: 0, context: '', ...extra };
+    }
+    const entry = mediaData[key];
+    entry.count += 1;
+    if (!entry.context) entry.context = getContextLabel(element);
+    return entry;
+  };
+  const scanMediaElement = (element) => {
+    const tag = element.tagName;
+    if (tag === 'IMG') {
+      const src = element.currentSrc || element.src || element.getAttribute('src');
+      if (src) {
+        const kind = isSvgSource(src) ? 'svg' : 'image';
+        buildMediaRecord(element, kind, src, { alt: element.alt || '', previewUrl: normalizeUrl(src), width: element.naturalWidth || element.width || 0, height: element.naturalHeight || element.height || 0, contextPath: getContextTrail(element, 4) });
+      }
+    }
+    if (tag === 'VIDEO') {
+      const src = element.currentSrc || element.src || element.getAttribute('src') || element.querySelector('source')?.src || element.querySelector('source')?.getAttribute('src');
+      if (src) buildMediaRecord(element, 'video', src, { previewUrl: normalizeUrl(src), width: element.videoWidth || element.width || 0, height: element.videoHeight || element.height || 0, contextPath: getContextTrail(element, 4) });
+    }
+    if (tag === 'AUDIO') {
+      const src = element.currentSrc || element.src || element.getAttribute('src') || element.querySelector('source')?.src || element.querySelector('source')?.getAttribute('src');
+      if (src) buildMediaRecord(element, 'audio', src, { previewUrl: normalizeUrl(src), contextPath: getContextTrail(element, 4) });
+    }
+    if (tag === 'SOURCE') {
+      const parentTag = element.parentElement?.tagName || '';
+      const src = element.src || element.getAttribute('src');
+      if (src && ['VIDEO', 'AUDIO', 'PICTURE'].includes(parentTag)) {
+        const kind = parentTag === 'VIDEO' ? 'video' : parentTag === 'AUDIO' ? 'audio' : isSvgSource(src) ? 'svg' : 'image';
+        buildMediaRecord(element, kind, src, { previewUrl: normalizeUrl(src), contextPath: getContextTrail(element, 4) });
+      }
+    }
+    if (tag === 'SVG') {
+      buildMediaRecord(element, 'svg', '', { inlineMarkup: element.outerHTML, previewUrl: `data:image/svg+xml;charset=utf-8,${encodeURIComponent(element.outerHTML)}`, contextPath: getContextTrail(element, 4) });
+    }
+
+    const backgroundImage = window.getComputedStyle(element).backgroundImage;
+    if (backgroundImage && backgroundImage !== 'none') {
+      const urls = [...backgroundImage.matchAll(/url\(["']?(.*?)["']?\)/g)].map((match) => match[1]).filter(Boolean);
+      urls.forEach((url) => buildMediaRecord(element, isSvgSource(url) ? 'svg' : 'background', url, { previewUrl: normalizeUrl(url), contextPath: getContextTrail(element, 4) }));
+    }
   };
 
   const varMap = buildVariableMap();
@@ -172,6 +241,8 @@ export const analyzeDesignSystemRuntime = () => {
       updateContext(entry, element);
     });
 
+    scanMediaElement(element);
+
     const fontFamily = style.fontFamily;
     const fontWeight = style.fontWeight;
     const fontSize = style.fontSize;
@@ -206,6 +277,7 @@ export const analyzeDesignSystemRuntime = () => {
   const fonts = buildTypographyEntries(stores, varMap);
   const allSizes = toSortedEntries(stores.sizeData, thresholds.sizes, (left, right) => parseFloat(right.value) - parseFloat(left.value));
   const { headings, body } = splitSizes(allSizes);
+  const media = Object.values(mediaData).sort((left, right) => right.count - left.count);
 
-  return { palette, radii, fonts, headings, body, spacing, effects, strokes, containers };
+  return { palette, radii, fonts, headings, body, spacing, effects, strokes, containers, media };
 };
