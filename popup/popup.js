@@ -8,8 +8,10 @@ import {
   renderRadiusCard, 
   renderTypographyCard, 
   renderSizeCard,
-  renderSpacingCard
+  renderSpacingCard,
+  renderEffectCard
 } from './modules/renderers.js';
+
 import { generateAiPrompt } from './modules/formatter.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -47,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     analyzeBtn.disabled = true;
     copyContextBtn.disabled = true;
     analyzeBtn.querySelector('span').innerText = 'ANALYZING...';
-    colorGrid.innerHTML = '<div class="status-message">Extraction tokens, radii, scale & spacing...</div>';
+    colorGrid.innerHTML = '<div class="status-message">Extraction tokens, scale, spacing & effects...</div>';
 
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -58,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       lastResults = results[0].result;
-      const { palette, radii, fonts, headings, body, spacing } = lastResults;
+      const { palette, radii, fonts, headings, body, spacing, effects } = lastResults;
       colorGrid.innerHTML = '';
 
       // 1. Palette
@@ -97,7 +99,14 @@ document.addEventListener('DOMContentLoaded', () => {
         colorGrid.appendChild(renderGroup(spacing, renderSpacingCard));
       }
 
+      // 7. Visual Effects
+      if (effects && effects.length > 0) {
+        colorGrid.appendChild(createSectionHeader('VISUAL EFFECTS'));
+        colorGrid.appendChild(renderGroup(effects, renderEffectCard));
+      }
+
       copyContextBtn.disabled = false;
+
     } catch (error) {
       colorGrid.innerHTML = `<div class="status-message" style="color: #ff4444">Error: ${error.message}</div>`;
     } finally {

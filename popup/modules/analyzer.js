@@ -19,7 +19,8 @@ export const analyzeDesignSystem = () => {
   const fontData = {};
   const sizeData = {};
   const spacingData = {};
-  const varMap = { colors: {}, radii: {}, fonts: {}, weights: {}, sizes: {}, spacing: {} };
+  const effectsData = {};
+  const varMap = { colors: {}, radii: {}, fonts: {}, weights: {}, sizes: {}, spacing: {}, effects: {} };
 
   // 1. Map CSS Variables from :root
   const rootStyle = window.getComputedStyle(document.documentElement);
@@ -47,6 +48,9 @@ export const analyzeDesignSystem = () => {
       } else if (/spacing|gap|padding|margin|gutter/i.test(prop)) {
         if (!varMap.spacing[val]) varMap.spacing[val] = [];
         varMap.spacing[val].push(prop);
+      } else if (/shadow|glow|glass|blur|gradient|blend/i.test(prop)) {
+        if (!varMap.effects[val]) varMap.effects[val] = [];
+        varMap.effects[val].push(prop);
       }
     }
   }
@@ -103,6 +107,24 @@ export const analyzeDesignSystem = () => {
       }
     });
 
+    // Effects
+    const effectProps = ['boxShadow', 'textShadow', 'backdropFilter', 'filter', 'mixBlendMode', 'backgroundImage'];
+    effectProps.forEach(p => {
+      let val = style[p];
+      if (!val || val === 'none' || val === 'normal' || val.includes('rgba(0, 0, 0, 0)')) return;
+      
+      // Handle Gradients specifically
+      if (p === 'backgroundImage') {
+        const gradMatch = val.match(/(linear|radial|conic)-gradient\(.+?\)/);
+        if (!gradMatch) return;
+        val = gradMatch[0];
+      }
+
+      if (!effectsData[val]) effectsData[val] = { count: 0, value: val, type: p, vars: varMap.effects[val] || [] };
+      effectsData[val].count++;
+      updateContext(effectsData[val], el);
+    });
+
     // Typography
     const f = style.fontFamily;
     const w = style.fontWeight;
@@ -151,6 +173,7 @@ export const analyzeDesignSystem = () => {
   const palette = Object.values(colorData).filter(d => d.count >= threshold || d.vars.length > 0).map(processEntry).sort((a,b) => b.count - a.count);
   const radii = Object.values(radiusData).filter(d => d.count >= threshold || d.vars.length > 0).map(processEntry).sort((a,b) => b.count - a.count);
   const spacing = Object.values(spacingData).filter(d => d.count >= 8 || d.vars.length > 0).map(processEntry).sort((a,b) => parseFloat(b.value) - parseFloat(a.value));
+  const effects = Object.values(effectsData).filter(d => d.count >= 2 || d.vars.length > 0).map(processEntry).sort((a,b) => b.count - a.count);
   
   const fonts = Object.values(fontData).filter(d => d.count >= 20 || d.vars.length > 0).map(f => {
     const weights = Object.keys(f.weightsMap).map(val => ({
@@ -176,7 +199,6 @@ export const analyzeDesignSystem = () => {
     return px < 22 && !isHeadingToken;
   });
 
-  return { palette, radii, fonts, headings, body, spacing };
-
-  return { palette, radii, fonts, headings, body };
+  return { palette, radii, fonts, headings, body, spacing, effects };
 };
+

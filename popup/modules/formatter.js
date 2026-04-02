@@ -37,13 +37,21 @@ export const generateAiPrompt = (data) => {
     const vars = s.vars.length > 0 ? ` (Tokens: ${s.vars.join(', ')})` : "";
     context += `- ${s.value}: Used ${s.count} times${vars}\n  - Usage: ${s.usageContext}\n`;
   });
-
   context += "\n#### 📐 SPACING & LAYOUT\n";
   data.spacing.forEach(s => {
     const vars = s.vars.length > 0 ? ` (Tokens: ${s.vars.join(', ')})` : "";
     context += `- ${s.value}: Used ${s.count} times${vars}\n  - Usage: ${s.usageContext}\n`;
   });
 
+  context += "\n#### ⚡ VISUAL EFFECTS\n";
+
+  data.effects.forEach(e => {
+    const vars = e.vars.length > 0 ? ` (Tokens: ${e.vars.join(', ')})` : "";
+    const typeLabel = e.type.replace(/([A-Z])/g, ' $1').toLowerCase();
+    context += `- ${e.value} [Type: ${typeLabel}]: Used ${e.count} times${vars}\n  - Usage: ${e.usageContext}\n`;
+  });
+
   context += "\n--- END OF CONTEXT ---\n";
+
   return context;
 };
