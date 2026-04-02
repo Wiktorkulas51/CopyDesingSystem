@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const mount = (target, content) => {
+    if (!target) return;
     target.replaceChildren();
     if (!content) return;
     if (typeof content === 'string') {
@@ -118,7 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
       mount(viewRoots.overview, renderEmpty('Waiting for capture...'));
       mount(viewRoots.overviewContent, null);
       mount(viewRoots.media, renderEmpty('Capture a page to inspect media assets.'));
-      mount(viewRoots.svgs, renderEmpty('Capture a page to inspect SVG assets.'));
       mount(viewRoots.colors, renderEmpty('Capture a page to inspect colors.'));
       mount(viewRoots.fonts, renderEmpty('Capture a page to inspect fonts.'));
       mount(viewRoots.history, renderHistoryView(state.history));
