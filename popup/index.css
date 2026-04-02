@@ -329,6 +329,14 @@ body {
   color: var(--accent-color);
 }
 
+.spacing-bar {
+  height: 6px;
+  background: var(--accent-color);
+  border-radius: 3px;
+  max-width: 80%;
+  box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+}
+
 /* Footer Actions */
 .footer {
   margin-top: 2rem;

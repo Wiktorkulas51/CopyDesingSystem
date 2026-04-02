@@ -7,7 +7,8 @@ import {
   renderColorCard, 
   renderRadiusCard, 
   renderTypographyCard, 
-  renderSizeCard 
+  renderSizeCard,
+  renderSpacingCard
 } from './modules/renderers.js';
 import { generateAiPrompt } from './modules/formatter.js';
 
@@ -46,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     analyzeBtn.disabled = true;
     copyContextBtn.disabled = true;
     analyzeBtn.querySelector('span').innerText = 'ANALYZING...';
-    colorGrid.innerHTML = '<div class="status-message">Extraction tokens, radii & scale...</div>';
+    colorGrid.innerHTML = '<div class="status-message">Extraction tokens, radii, scale & spacing...</div>';
 
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -57,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       lastResults = results[0].result;
-      const { palette, radii, fonts, headings, body } = lastResults;
+      const { palette, radii, fonts, headings, body, spacing } = lastResults;
       colorGrid.innerHTML = '';
 
       // 1. Palette
@@ -88,6 +89,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (body.length > 0) {
         colorGrid.appendChild(createSectionHeader('FONT SCALE: BODY TEXT'));
         colorGrid.appendChild(renderGroup(body, renderSizeCard));
+      }
+
+      // 6. Spacing Scale
+      if (spacing && spacing.length > 0) {
+        colorGrid.appendChild(createSectionHeader('SPACING SCALE'));
+        colorGrid.appendChild(renderGroup(spacing, renderSpacingCard));
       }
 
       copyContextBtn.disabled = false;
