@@ -51,6 +51,12 @@ export const generateAiPrompt = (data) => {
     context += `- ${e.value} [Type: ${typeLabel}]: Used ${e.count} times${vars}\n  - Usage: ${e.usageContext}\n`;
   });
 
+  context += "\n#### 🖊 STROKES & OUTLINES\n";
+  data.strokes.forEach(s => {
+    const vars = s.vars.length > 0 ? ` (Tokens: ${s.vars.join(', ')})` : "";
+    context += `- ${s.value} [Type: ${s.type}]: Used ${s.count} times${vars}\n  - Usage: ${s.usageContext}\n`;
+  });
+
   context += "\n--- END OF CONTEXT ---\n";
 
   return context;

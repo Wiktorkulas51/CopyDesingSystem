@@ -232,3 +232,41 @@ export const renderEffectCard = (effectData) => {
   return card;
 };
 
+export const renderStrokeCard = (strokeData) => {
+  const card = document.createElement('div');
+  card.className = 'color-card technical stroke-card';
+  const hasVariables = strokeData.vars && strokeData.vars.length > 0;
+  const copyValue = hasVariables ? strokeData.vars[0] : strokeData.value;
+
+  let previewHTML = '';
+  if (strokeData.type === 'stroke-width') {
+    previewHTML = `<div class="stroke-preview-line" style="height: ${strokeData.value}; background: var(--primary);"></div>`;
+  } else {
+    // For stroke colors, show a hollow circle (typical of strokes)
+    previewHTML = `<div class="stroke-preview-circle" style="border: 2px solid ${strokeData.value}; width: 24px; height: 24px; border-radius: 50%;"></div>`;
+  }
+
+  let varsHTML = hasVariables ? `
+    <div class="card-tokens">
+      ${strokeData.vars.map(v => `<span class="token-name" data-copy="${v}">${v}</span>`).join('')}
+    </div>
+  ` : '';
+
+  card.innerHTML = `
+    <div class="stroke-preview-container">
+      ${previewHTML}
+    </div>
+    <div class="color-meta">
+      <div class="hex-row">
+        <span class="color-hex">${strokeData.value}</span>
+        <span class="usage-pill">${strokeData.count}x</span>
+      </div>
+      <div class="usage-context-label">${strokeData.usageContext}</div>
+      ${varsHTML}
+    </div>
+  `;
+
+  setupCopyListeners(card, copyValue);
+  return card;
+};
+

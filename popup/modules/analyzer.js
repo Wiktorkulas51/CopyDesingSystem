@@ -20,7 +20,8 @@ export const analyzeDesignSystem = () => {
   const sizeData = {};
   const spacingData = {};
   const effectsData = {};
-  const varMap = { colors: {}, radii: {}, fonts: {}, weights: {}, sizes: {}, spacing: {}, effects: {} };
+  const strokeData = {};
+  const varMap = { colors: {}, radii: {}, fonts: {}, weights: {}, sizes: {}, spacing: {}, effects: {}, strokes: {} };
 
   // 1. Map CSS Variables from :root
   const rootStyle = window.getComputedStyle(document.documentElement);
@@ -51,6 +52,9 @@ export const analyzeDesignSystem = () => {
       } else if (/shadow|glow|glass|blur|gradient|blend/i.test(prop)) {
         if (!varMap.effects[val]) varMap.effects[val] = [];
         varMap.effects[val].push(prop);
+      } else if (/stroke|outline/i.test(prop)) {
+        if (!varMap.strokes[val]) varMap.strokes[val] = [];
+        varMap.strokes[val].push(prop);
       }
     }
   }
@@ -125,6 +129,39 @@ export const analyzeDesignSystem = () => {
       updateContext(effectsData[val], el);
     });
 
+    // Strokes & Outlines
+    const strokeProps = ['stroke', 'strokeWidth', 'webkitTextStrokeWidth', 'webkitTextStrokeColor'];
+    strokeProps.forEach(p => {
+      let val = style[p];
+      if (!val || val === 'none' || val === '0px' || val === '0' || val.includes('rgba(0, 0, 0, 0)')) return;
+      
+      const isSvgAttr = p === 'stroke' || p === 'strokeWidth';
+      const isTextAttr = p.includes('webkitTextStroke');
+      
+      // VALIDATION: Only capture if context is correct to avoid noise on DIVs
+      if (isSvgAttr && !el.closest('svg')) return;
+      
+      if (isTextAttr) {
+        const textTags = ['SPAN', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P', 'A', 'LI', 'LABEL'];
+        if (!textTags.includes(el.tagName)) return;
+        const widthVal = parseFloat(style.webkitTextStrokeWidth);
+        if (isNaN(widthVal) || widthVal <= 0) return;
+      }
+
+      // Normalize colors for strokes
+      if (p.includes('Color') || p === 'stroke') {
+        const hex = normalizeColor(val);
+        if (hex) val = hex;
+      }
+
+      const category = p.includes('Width') ? 'stroke-width' : 'stroke-color';
+      const key = `${category}:${val}`;
+
+      if (!strokeData[key]) strokeData[key] = { count: 0, value: val, type: category, vars: varMap.strokes?.[val] || [] };
+      strokeData[key].count++;
+      updateContext(strokeData[key], el);
+    });
+
     // Typography
     const f = style.fontFamily;
     const w = style.fontWeight;
@@ -174,6 +211,7 @@ export const analyzeDesignSystem = () => {
   const radii = Object.values(radiusData).filter(d => d.count >= threshold || d.vars.length > 0).map(processEntry).sort((a,b) => b.count - a.count);
   const spacing = Object.values(spacingData).filter(d => d.count >= 8 || d.vars.length > 0).map(processEntry).sort((a,b) => parseFloat(b.value) - parseFloat(a.value));
   const effects = Object.values(effectsData).filter(d => d.count >= 2 || d.vars.length > 0).map(processEntry).sort((a,b) => b.count - a.count);
+  const strokes = Object.values(strokeData).filter(d => d.count >= 2 || d.vars.length > 0).map(processEntry).sort((a,b) => b.count - a.count);
   
   const fonts = Object.values(fontData).filter(d => d.count >= 20 || d.vars.length > 0).map(f => {
     const weights = Object.keys(f.weightsMap).map(val => ({
@@ -199,6 +237,6 @@ export const analyzeDesignSystem = () => {
     return px < 22 && !isHeadingToken;
   });
 
-  return { palette, radii, fonts, headings, body, spacing, effects };
+  return { palette, radii, fonts, headings, body, spacing, effects, strokes };
 };
 

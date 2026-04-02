@@ -366,6 +366,30 @@ body {
   font-family: 'JetBrains Mono', monospace;
 }
 
+.stroke-preview-container {
+  height: 60px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.stroke-preview-line {
+  width: 60%;
+  background: var(--accent-color);
+  box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+}
+
+.stroke-preview-circle {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 10px rgba(0, 255, 204, 0.1);
+}
+
 /* Footer Actions */
 .footer {
   margin-top: 2rem;
