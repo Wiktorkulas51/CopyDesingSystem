@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antigravity Mapper</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div id="app">
+    <header class="header">
+      <div class="logo">
+        <div class="logo-box"></div>
+        <span>ANTIGRAVITY</span>
+      </div>
+      <p class="subtitle">Design System Capture</p>
+    </header>
+
+    <main class="main">
+      <section class="section">
+        <div id="color-grid" class="color-grid">
+          <!-- Categories and colors will be injected here -->
+          <div class="status-message">Ready to map tokens...</div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <button id="analyze-btn" class="primary-btn">
+        <span>CAPTURE DESIGN</span>
+        <svg fill="currentColor" viewBox="0 0 24 24" width="18" height="18"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+      </button>
+      <button id="copy-context-btn" class="secondary-btn" title="Copy structured prompt for AI coding assistant" disabled>
+        <span>COPY AI CONTEXT</span>
+        <svg fill="currentColor" viewBox="0 0 24 24" width="18" height="18"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+      </button>
+    </footer>
+  </div>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

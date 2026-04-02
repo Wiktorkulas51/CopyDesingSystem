@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Antigravity CopyDesignSystem",
+  "version": "1.0.0",
+  "description": "Extract design tokens (colors, fonts, sizes) from any website.",
+  "action": {
+    "default_popup": "popup/index.html",
+    "default_icon": {
+      "16": "assets/icon16.png",
+      "48": "assets/icon48.png",
+      "128": "assets/icon128.png"
+    }
+  },
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
