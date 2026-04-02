@@ -1,0 +1,156 @@
+.color-card {
+  background: var(--surface-color);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.color-card.technical {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem;
+  height: auto;
+  min-height: 120px;
+}
+
+.color-meta {
+  font-size: 0.7rem;
+}
+
+.hex-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.color-preview {
+  width: 100%;
+  height: 48px;
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-tokens {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 80px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  padding: 4px;
+}
+
+.token-name {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 11px;
+  color: var(--accent-color);
+  background: rgba(0, 255, 204, 0.05);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 255, 204, 0.1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: copy;
+  transition: all 0.2s;
+}
+
+.token-name.copied {
+  color: #fff;
+  background: var(--accent-color);
+}
+
+.copied-full {
+  color: var(--accent-color);
+  font-weight: 800;
+  text-align: center;
+  padding: 10px 0;
+  animation: pulse 0.5s infinite alternate;
+}
+
+.radius-card {
+  transition: transform 0.2s;
+}
+
+.font-family-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+.weight-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 6px 0;
+}
+
+.weight-pill {
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+  border-radius: 100px;
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: help;
+}
+
+.effect-type-label {
+  text-transform: capitalize;
+  font-size: 11px !important;
+  color: var(--text-secondary);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.container-category-label {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.container-category-label.is-layout {
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
+@media (hover: hover) {
+  .color-card:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+  }
+
+  .token-name:hover {
+    background: rgba(0, 255, 204, 0.15);
+    border-color: var(--accent-color);
+  }
+
+  .radius-card:hover .radius-preview-box {
+    transform: scale(1.1);
+  }
+
+  .weight-pill:hover {
+    background: rgba(0, 255, 204, 0.1);
+    border-color: var(--accent-color);
+    color: #fff;
+  }
+}
+
+@keyframes pulse {
+  from {
+    opacity: 0.7;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

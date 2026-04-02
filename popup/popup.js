@@ -2,7 +2,7 @@
  * Antigravity Popup Entry Point
  * Orchestrates design token extraction and UI rendering.
  */
-import { analyzeDesignSystem } from './modules/analyzer.js';
+import { analyzeDesignSystemRuntime } from './modules/analyzer/runtime.js';
 import { 
   renderColorCard, 
   renderRadiusCard, 
@@ -58,8 +58,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const results = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: analyzeDesignSystem
+        func: analyzeDesignSystemRuntime
       });
+
+      if (!results?.[0] || !results[0].result) {
+        throw new Error('Analyzer did not return data.');
+      }
 
       lastResults = results[0].result;
       const { palette, radii, fonts, headings, body, spacing, effects, strokes, containers } = lastResults;

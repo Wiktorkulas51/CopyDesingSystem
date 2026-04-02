@@ -1,0 +1,84 @@
+.section-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+
+.section-label .prefix {
+  color: var(--accent-color);
+}
+
+.usage-pill {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+}
+
+.usage-context-label {
+  font-size: 9px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  opacity: 0.6;
+  display: block;
+}
+
+.primary-btn,
+.secondary-btn {
+  width: 100%;
+  padding: 0.875rem;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.primary-btn {
+  background: var(--accent-color);
+  color: #000;
+  border: none;
+}
+
+.secondary-btn {
+  background: transparent;
+  color: var(--accent-color);
+  border: 1px solid rgba(0, 255, 204, 0.4);
+}
+
+.secondary-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+.primary-btn:active:not(:disabled),
+.secondary-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+@media (hover: hover) {
+  .primary-btn:hover:not(:disabled),
+  .secondary-btn:hover:not(:disabled) {
+    box-shadow: 0 0 20px rgba(0, 255, 209, 0.3);
+    transform: scale(0.98);
+  }
+
+  .secondary-btn:hover:not(:disabled) {
+    background: rgba(0, 255, 204, 0.05);
+  }
+}
