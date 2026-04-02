@@ -57,6 +57,12 @@ export const generateAiPrompt = (data) => {
     context += `- ${s.value} [Type: ${s.type}]: Used ${s.count} times${vars}\n  - Usage: ${s.usageContext}\n`;
   });
 
+  context += "\n#### 📦 CONTAINERS & LAYOUT\n";
+  data.containers.forEach(c => {
+    const vars = c.vars.length > 0 ? ` (Tokens: ${c.vars.join(', ')})` : "";
+    context += `- ${c.value} [${c.category}]: Used ${c.count} times${vars}\n  - Usage: ${c.usageContext}\n`;
+  });
+
   context += "\n--- END OF CONTEXT ---\n";
 
   return context;

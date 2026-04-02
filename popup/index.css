@@ -390,6 +390,66 @@ body {
   box-shadow: 0 0 10px rgba(0, 255, 204, 0.1);
 }
 
+/* Container Previews */
+.container-preview-outer {
+  height: 60px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+  padding: 0 15px;
+  border: 1px solid var(--border-color);
+  position: relative;
+}
+
+.container-preview-inner {
+  height: 20px;
+  border-left: 2px solid var(--accent-color);
+  border-right: 2px solid var(--accent-color);
+  position: relative;
+  background: rgba(0, 255, 209, 0.05);
+  max-width: 90%;
+}
+
+.container-preview-measure {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--accent-color);
+  opacity: 0.4;
+}
+
+.container-preview-measure::before,
+.container-preview-measure::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  width: 1px;
+  height: 7px;
+  background: var(--accent-color);
+}
+
+.container-preview-measure::after {
+  right: 0;
+}
+
+.container-category-label {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.container-category-label.is-layout {
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
 /* Footer Actions */
 .footer {
   margin-top: 2rem;

@@ -10,7 +10,8 @@ import {
   renderSizeCard,
   renderSpacingCard,
   renderEffectCard,
-  renderStrokeCard
+  renderStrokeCard,
+  renderContainerCard
 } from './modules/renderers.js';
 
 import { generateAiPrompt } from './modules/formatter.js';
@@ -61,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       lastResults = results[0].result;
-      const { palette, radii, fonts, headings, body, spacing, effects, strokes } = lastResults;
+      const { palette, radii, fonts, headings, body, spacing, effects, strokes, containers } = lastResults;
       colorGrid.innerHTML = '';
 
       // 1. Palette
@@ -110,6 +111,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (strokes && strokes.length > 0) {
         colorGrid.appendChild(createSectionHeader('STROKES & OUTLINES'));
         colorGrid.appendChild(renderGroup(strokes, renderStrokeCard));
+      }
+
+      // 9. Containers
+      if (containers && containers.length > 0) {
+        colorGrid.appendChild(createSectionHeader('CONTAINERS & LAYOUT'));
+        colorGrid.appendChild(renderGroup(containers, renderContainerCard));
       }
 
       copyContextBtn.disabled = false;

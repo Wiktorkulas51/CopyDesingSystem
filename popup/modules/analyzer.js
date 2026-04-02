@@ -21,7 +21,8 @@ export const analyzeDesignSystem = () => {
   const spacingData = {};
   const effectsData = {};
   const strokeData = {};
-  const varMap = { colors: {}, radii: {}, fonts: {}, weights: {}, sizes: {}, spacing: {}, effects: {}, strokes: {} };
+  const containerData = {};
+  const varMap = { colors: {}, radii: {}, fonts: {}, weights: {}, sizes: {}, spacing: {}, effects: {}, strokes: {}, containers: {} };
 
   // 1. Map CSS Variables from :root
   const rootStyle = window.getComputedStyle(document.documentElement);
@@ -55,6 +56,9 @@ export const analyzeDesignSystem = () => {
       } else if (/stroke|outline/i.test(prop)) {
         if (!varMap.strokes[val]) varMap.strokes[val] = [];
         varMap.strokes[val].push(prop);
+      } else if (/container|width|wrapper/i.test(prop)) {
+        if (!varMap.containers[val]) varMap.containers[val] = [];
+        varMap.containers[val].push(prop);
       }
     }
   }
@@ -98,6 +102,22 @@ export const analyzeDesignSystem = () => {
       if (!radiusData[r]) radiusData[r] = { count: 0, value: r, vars: varMap.radii[r] || [] };
       radiusData[r].count++;
       updateContext(radiusData[r], el);
+    }
+
+    // Containers (Max Widths)
+    const mw = style.maxWidth;
+    if (mw && mw !== 'none' && mw !== '100%' && mw !== '0px') {
+        const px = parseFloat(mw);
+        if (px > 300) { // Ignore small component max-widths
+            if (!containerData[mw]) containerData[mw] = { count: 0, value: mw, vars: varMap.containers?.[mw] || [], isLayout: false };
+            containerData[mw].count++;
+            
+            // Heuristic: identify if this looks like a page-level container
+            const isLayoutContext = /container|inner|wrapper|layout|grid|section|page/i.test(el.className + el.id);
+            if (isLayoutContext || px > 1000) containerData[mw].isLayout = true;
+
+            updateContext(containerData[mw], el);
+        }
     }
 
     // Spacing (Padding, Margin, Gap)
@@ -212,6 +232,13 @@ export const analyzeDesignSystem = () => {
   const spacing = Object.values(spacingData).filter(d => d.count >= 8 || d.vars.length > 0).map(processEntry).sort((a,b) => parseFloat(b.value) - parseFloat(a.value));
   const effects = Object.values(effectsData).filter(d => d.count >= 2 || d.vars.length > 0).map(processEntry).sort((a,b) => b.count - a.count);
   const strokes = Object.values(strokeData).filter(d => d.count >= 2 || d.vars.length > 0).map(processEntry).sort((a,b) => b.count - a.count);
+  const containers = Object.values(containerData)
+    .filter(d => d.count >= 1 || d.vars.length > 0)
+    .map(d => {
+        d.category = d.isLayout ? "Layout Grid" : "Component Box";
+        return processEntry(d);
+    })
+    .sort((a,b) => (b.isLayout ? 1 : 0) - (a.isLayout ? 1 : 0) || b.count - a.count);
   
   const fonts = Object.values(fontData).filter(d => d.count >= 20 || d.vars.length > 0).map(f => {
     const weights = Object.keys(f.weightsMap).map(val => ({
@@ -237,6 +264,6 @@ export const analyzeDesignSystem = () => {
     return px < 22 && !isHeadingToken;
   });
 
-  return { palette, radii, fonts, headings, body, spacing, effects, strokes };
+  return { palette, radii, fonts, headings, body, spacing, effects, strokes, containers };
 };
 

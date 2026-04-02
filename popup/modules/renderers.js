@@ -270,3 +270,36 @@ export const renderStrokeCard = (strokeData) => {
   return card;
 };
 
+export const renderContainerCard = (containerData) => {
+  const card = document.createElement('div');
+  card.className = 'color-card technical container-card';
+  const hasVariables = containerData.vars && containerData.vars.length > 0;
+  const copyValue = hasVariables ? containerData.vars[0] : containerData.value;
+  
+  let varsHTML = hasVariables ? `
+    <div class="card-tokens">
+      ${containerData.vars.map(v => `<span class="token-name" data-copy="${v}">${v}</span>`).join('')}
+    </div>
+  ` : '';
+
+  card.innerHTML = `
+    <div class="container-preview-outer">
+      <div class="container-preview-inner" style="width: 80%;">
+        <div class="container-preview-measure"></div>
+      </div>
+    </div>
+    <div class="color-meta">
+      <div class="hex-row">
+        <span class="color-hex">${containerData.value}</span>
+        <span class="usage-pill">${containerData.count}x</span>
+      </div>
+      <div class="usage-context-label">${containerData.usageContext}</div>
+      <div class="container-category-label ${containerData.isLayout ? 'is-layout' : ''}">[${containerData.category}]</div>
+      ${varsHTML}
+    </div>
+  `;
+
+  setupCopyListeners(card, copyValue);
+  return card;
+};
+
