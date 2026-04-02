@@ -13,7 +13,6 @@ import {
   renderColorsView,
   renderFontsView,
   renderMediaView,
-  renderSvgView,
   renderHistoryView,
 } from './modules/views.js';
 
@@ -26,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     overview: document.getElementById('dashboard-summary'),
     overviewContent: document.getElementById('dashboard-grid'),
     media: document.getElementById('media-view'),
-    svgs: document.getElementById('svgs-view'),
     colors: document.getElementById('colors-view'),
     fonts: document.getElementById('fonts-view'),
     history: document.getElementById('history-view'),
@@ -133,7 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
     mount(viewRoots.colors, renderColorsView(state.results));
     mount(viewRoots.fonts, renderFontsView(state.results));
     mount(viewRoots.media, renderMediaView(state.mediaAssets, state.mediaFilter, mediaSummary));
-    mount(viewRoots.svgs, renderSvgView(state.mediaAssets));
     mount(viewRoots.history, renderHistoryView(state.history));
   }
 

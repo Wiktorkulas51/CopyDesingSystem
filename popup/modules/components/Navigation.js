@@ -10,7 +10,6 @@ const ICONS = {
 export const NAV_ITEMS = [
   { id: 'overview', label: 'Overview', icon: ICONS.overview },
   { id: 'media', label: 'Media', icon: ICONS.media },
-  { id: 'svgs', label: 'SVGs', icon: ICONS.svgs },
   { id: 'colors', label: 'Colors', icon: ICONS.colors },
   { id: 'fonts', label: 'Fonts', icon: ICONS.fonts },
   { id: 'history', label: 'History', icon: ICONS.history },

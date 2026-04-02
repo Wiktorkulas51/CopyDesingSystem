@@ -104,15 +104,17 @@ export const renderFontsView = (results) =>
 
 export const renderMediaView = (assets, filter, summary) => {
   const view = createViewShell();
-  const filtered = filter === 'all' ? assets : assets.filter((asset) => asset.category === filter || asset.kind === filter);
+  const filtered = filter === 'all' 
+    ? assets 
+    : assets.filter((asset) => asset.category === filter || asset.kind === filter || (filter === 'svgs' && asset.kind === 'svg'));
+  
   const toolbar = createElement('div', 'view-toolbar');
   const filterGroup = createElement('div', 'filter-group');
   const chips = [
     ['all', 'All'],
     ['images', 'Images'],
     ['videos', 'Videos'],
-    ['audio', 'Audio'],
-    ['backgrounds', 'Backgrounds'],
+    ['backgrounds', 'CSS'],
     ['svgs', 'SVGs'],
   ];
 
@@ -127,35 +129,21 @@ export const renderMediaView = (assets, filter, summary) => {
   exportButton.type = 'button';
   exportButton.dataset.action = 'export-zip';
 
-  const meta = createElement('div', 'view-toolbar__meta', `${filtered.length} of ${summary.total} assets`);
+  const meta = createElement('div', 'view-toolbar__meta', `${filtered.length} items`);
   toolbar.append(filterGroup, meta, exportButton);
-
-  const summaryGrid = createSummaryGrid(
-    summaryCard('Assets', summary.total, 'total captured'),
-    summaryCard('Images', summary.images, 'bitmaps and illustrations'),
-    summaryCard('Backgrounds', summary.backgrounds, 'CSS backgrounds'),
-    summaryCard('Videos', summary.videos, 'motion assets'),
-    summaryCard('Audio', summary.audio, 'sound assets')
-  );
 
   const grid = createElement('div', 'asset-grid');
   if (!filtered.length) {
-    grid.append(createElement('div', 'empty-state', 'No assets for this filter.'));
+    grid.append(createElement('div', 'empty-state', 'No assets found.'));
   } else {
     filtered.forEach((asset, index) => grid.append(renderAssetCard(asset, index, filtered.length)));
   }
 
-  view.append(toolbar, summaryGrid, grid);
+  view.append(toolbar, grid);
   return view;
 };
 
-export const renderSvgView = (assets) => {
-  const svgs = assets.filter((asset) => asset.category === 'svgs' || asset.kind === 'svg');
-  const view = createViewShell();
-  const section = mountSection('SVG Assets', svgs, (asset) => renderAssetCard(asset, svgs.indexOf(asset), svgs.length), 'No SVG assets found.');
-  view.append(section);
-  return view;
-};
+export const renderSvgView = () => null;
 
 export const renderHistoryView = (history) => {
   const list = createElement('div', 'history-list');
